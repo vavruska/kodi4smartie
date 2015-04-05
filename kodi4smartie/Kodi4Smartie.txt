@@ -1,0 +1,65 @@
+Kodi4Smartie
+============
+
+Kodi4Smartie is a DLL plugin for LCD Smartie(http://lcdsmartie.sourceforge.net/) which listens for notification from Kodi and displays information on a 2 line LCD character display. While the default line width is 20 character there is no reason it can’t be configured for a short or longer width.
+
+Installation
+------------
+
+1) Download the zip file containing the Kodi4Smartie DLL and associated files.
+2) Copy the kodi4smartie.dll and the kodi4smartie.cfg to the LCD Smartie plugins folder.
+3) Copy the cpprest120_2_5.dll to the LCD Smartie folder.
+
+The DLL provides the following LCD Smartie functions:
+
+Function 1: Is meant to be displayed on line 1 of an LCD display. It shows title information as well as other navigation information (FF, rew, Volume)
+
+Function 2: Is meant to be displayed on line 2 of an LCD display. Upon initial playing of a title Kodi4Smartie shows various lines of information about the title. It then shows current progress in a title.
+
+Function 3: Lets you know if Kodi is running. It can be used for custom actions inside LCD Smartie.
+
+Function 4: Displays the current version of the Kodi4Smartie DLL. Not really useful unless you are unsure which version of the DLL you are running.
+
+Configuring LCD Smartie
+-----------------------
+
+In the lcd Smartie setup window for line 1 & 2 enter the following:
+
+$dll(Kodi4smartie,1,,)
+$dll(Kodi4smartie,2,,)
+
+Configure the following for both lines:
+
+Enable “Don’t scroll this line”
+Disable “Continue on next line”
+Disable “Center Text”
+
+Notifications
+-------------
+Kodi4Smartie listens for the following notifications from Kodi
+
+"Player.OnPlay"
+"Player.OnPause"
+"Player.OnStop"
+"Player.OnSpeedChanged"
+"Application.OnVolumeChanged"
+
+When the dll receives notifications it will display different information based on which notification is received and which player you are using (movie, song, picture, tv).
+
+
+Configuration
+-------------
+
+While I have tried to make Kodi4Smartie somewhat configurable it is also based on what I wanted to see on each screen.
+
+See the Kodi4Smartie.cfg file for information about configuring kodi4smartie.
+
+Source Code
+-----------
+
+The source code is open source under the GPL license. We will gladly accept any modification as long as they fit into the project.
+
+Bugs?
+-----
+
+If you find any bugs please let me know.
