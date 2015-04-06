@@ -134,43 +134,50 @@ void handle_on_play(json::value in)
 
 				task <void>([&]()
 				{
-					int timer_val = 1;
-					json::value ret_val = get_item_from_player(get_playerid());
-					json::value result = ret_val[U("result")];
-					json::value ritem = result[U("item")];
-					json::value title = ritem[U("title")];
-					json::value type = ritem[U("type")];
-					if (type.as_string().compare(U("movie")) == 0)
+					try
 					{
-						set_title(title.as_string());
+						int timer_val = 1;
+						json::value ret_val = get_item_from_player(get_playerid());
+						json::value result = ret_val[U("result")];
+						json::value ritem = result[U("item")];
+						json::value title = ritem[U("title")];
+						json::value type = ritem[U("type")];
+						if (type.as_string().compare(U("movie")) == 0)
+						{
+							set_title(title.as_string());
+						}
+						else if (type.as_string().compare(U("episode")) == 0)
+						{
+							//get additional epsiode information.
+							json::value season = ritem[U("season")];
+							json::value episode = ritem[U("episode")];
+							json::value showtitle = ritem[U("showtitle")];
+							set_title(showtitle.as_string());
+							set_episode_info(season.as_integer(), episode.as_integer(), title.as_string());
+							timer_val = 3;
+						}
+						else if (type.as_string().compare(U("channel")) == 0)
+						{
+							json::value channel = ritem[U("channel")];
+							json::value channel_number = ritem[U("channelnumber")];
+							set_tv_info(channel.as_string(), channel_number.as_integer(), title.as_string());
+							timer_val = 3;
+						}
+						else if (type.as_string().compare(U("song")) == 0)
+						{
+							json::value track = ritem[U("track")];
+							json::value album = ritem[U("album")];
+							json::value artist = ritem[U("artist")];
+							set_title(title.as_string());
+							set_song_info(artist[0].as_string(), album.as_string(), track.as_integer());
+							timer_val = 3;
+						}
+						start_time_timer(timer_val);
 					}
-					else if (type.as_string().compare(U("episode")) == 0)
+					catch (...)
 					{
-						//get additional epsiode information.
-						json::value season = ritem[U("season")];
-						json::value episode = ritem[U("episode")];
-						json::value showtitle = ritem[U("showtitle")];
-						set_title(showtitle.as_string());
-						set_episode_info(season.as_integer(), episode.as_integer(), title.as_string());
-						timer_val = 3;
+						::log("Malformed get item response");
 					}
-					else if (type.as_string().compare(U("channel")) == 0)
-					{
-						json::value channel = ritem[U("channel")];
-						json::value channel_number = ritem[U("channelnumber")];
-						set_tv_info(channel.as_string(), channel_number.as_integer(), title.as_string());
-						timer_val = 3;
-					}
-					else if (type.as_string().compare(U("song")) == 0)
-					{
-						json::value track = ritem[U("track")];
-						json::value album = ritem[U("album")];
-						json::value artist = ritem[U("artist")];
-						set_title(title.as_string());
-						set_song_info(artist[0].as_string(), album.as_string(), track.as_integer());
-						timer_val = 3;
-					}
-					start_time_timer(timer_val);
 				});
 			}
 			else

@@ -218,9 +218,9 @@ void set_time(int percentage, string_t time, string_t totaltime)
 	if (get_config(cUSE_BARS))
 	{
 		string display;
-		int perc = ((get_config(cLCD_WIDTH) * 10) / percentage) + 1;
-		time_str = string_t(U("$Bar(")) + std::to_wstring(perc) + string_t(U(",")) + 
-			std::to_wstring(get_config(cLCD_WIDTH)) + string_t(U(",")) + std::to_wstring(get_config(cLCD_WIDTH)) + string_t(U(")"));
+
+		time_str = string_t(U("$Bar(")) + std::to_wstring(percentage) + string_t(U(",100,")) +
+			std::to_wstring(get_config(cLCD_WIDTH)) + string_t(U(")"));
 	}
 	else
 	{
