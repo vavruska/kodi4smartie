@@ -139,7 +139,7 @@ void init_config()
 	char *equal;
 	char *data;
 
-	if (fopen_s(&fd, "C:\\Users\\cv\\Documents\\Visual Studio 2013\\Projects\\kodi_smartie\\Debug\\kodi4smartie.cfg", "r") == 0)
+	if (fopen_s(&fd, "plugins\\kodi4smartie.cfg", "r") == 0)
 	{
 		while (fgets(line, sizeof(line), fd))
 		{
