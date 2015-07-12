@@ -114,13 +114,16 @@ void get_time_properties_from_player(int playerid)
 	json::value ret_val = ws_send_wait(U("Player.GetProperties"), data);
 
 	json::value result = ret_val[U("result")];
-	int percentage = result[U("percentage")].as_integer();
-	json::value time = result[U("time")];
-	json::value totaltime = result[U("totaltime")];
+	if (!result.is_null())
+	{
+		int percentage = result[U("percentage")].as_integer();
+		json::value time = result[U("time")];
+		json::value totaltime = result[U("totaltime")];
 
-	utility::string_t timestr = format_time(time);
-	utility::string_t totaltimestr = format_time(totaltime);
-	set_time(percentage, timestr, totaltimestr);
+		utility::string_t timestr = format_time(time);
+		utility::string_t totaltimestr = format_time(totaltime);
+		set_time(percentage, timestr, totaltimestr);
+	}
 }
 
 void handle_on_play(json::value in)
@@ -158,40 +161,43 @@ void handle_on_play(json::value in)
 						int timer_val = 1;
 						json::value ret_val = get_item_from_player(get_playerid());
 						json::value result = ret_val[U("result")];
-						json::value ritem = result[U("item")];
-						json::value title = ritem[U("title")];
-						json::value type = ritem[U("type")];
-						if (type.as_string().compare(U("movie")) == 0)
+						if (!result.is_null())
 						{
-							set_title(title.as_string());
+							json::value ritem = result[U("item")];
+							json::value title = ritem[U("title")];
+							json::value type = ritem[U("type")];
+							if (type.as_string().compare(U("movie")) == 0)
+							{
+								set_title(title.as_string());
+							}
+							else if (type.as_string().compare(U("episode")) == 0)
+							{
+								//get additional epsiode information.
+								json::value season = ritem[U("season")];
+								json::value episode = ritem[U("episode")];
+								json::value showtitle = ritem[U("showtitle")];
+								set_title(showtitle.as_string());
+								set_episode_info(season.as_integer(), episode.as_integer(), title.as_string());
+								timer_val = 3;
+							}
+							else if (type.as_string().compare(U("channel")) == 0)
+							{
+								json::value channel = ritem[U("channel")];
+								json::value channel_number = ritem[U("channelnumber")];
+								set_tv_info(channel.as_string(), channel_number.as_integer(), title.as_string());
+								timer_val = 3;
+							}
+							else if (type.as_string().compare(U("song")) == 0)
+							{
+								json::value track = ritem[U("track")];
+								json::value album = ritem[U("album")];
+								json::value artist = ritem[U("artist")];
+								set_title(title.as_string());
+								set_song_info(artist[0].as_string(), album.as_string(), track.as_integer());
+								timer_val = 3;
+							}
+							start_time_timer(timer_val);
 						}
-						else if (type.as_string().compare(U("episode")) == 0)
-						{
-							//get additional epsiode information.
-							json::value season = ritem[U("season")];
-							json::value episode = ritem[U("episode")];
-							json::value showtitle = ritem[U("showtitle")];
-							set_title(showtitle.as_string());
-							set_episode_info(season.as_integer(), episode.as_integer(), title.as_string());
-							timer_val = 3;
-						}
-						else if (type.as_string().compare(U("channel")) == 0)
-						{
-							json::value channel = ritem[U("channel")];
-							json::value channel_number = ritem[U("channelnumber")];
-							set_tv_info(channel.as_string(), channel_number.as_integer(), title.as_string());
-							timer_val = 3;
-						}
-						else if (type.as_string().compare(U("song")) == 0)
-						{
-							json::value track = ritem[U("track")];
-							json::value album = ritem[U("album")];
-							json::value artist = ritem[U("artist")];
-							set_title(title.as_string());
-							set_song_info(artist[0].as_string(), album.as_string(), track.as_integer());
-							timer_val = 3;
-						}
-						start_time_timer(timer_val);
 					}
 					catch (...)
 					{
@@ -299,9 +305,7 @@ void handle_volume_change(json::value incoming)
 		json::value vol = data[U("volume")];
 		json::value muted = data[U("muted")];
 		bool mute = muted.as_bool();
-		::log("caught 1");
 		int volume = vol.as_number().to_uint32();
-		::log("caught2");
 
 		set_volume(mute,volume);
 	}
@@ -309,6 +313,131 @@ void handle_volume_change(json::value incoming)
 	{
 		::log("caught");
 
+	}
+}
+
+std::string get_custom_data(char *method, char *item)
+{
+
+	bool needs_playerid = false;
+	int playerid;
+	json::value data;
+	json::value params;
+	json::value properties;
+	json::value ret_item;
+	json::value item_val;
+	char *pos;
+	char *retsubitem = NULL;
+
+	try
+	{
+		if ((_stricmp(method, "Player.GetItem") == 0) || 
+			(_stricmp(method, "Player.GetProperties") == 0))
+		{
+			json::value request;
+			json::value response;
+			json::value result;
+
+			response = ws_send_wait(U("Player.GetActivePlayers"), request);
+			result = response[U("result")];
+			if (!result.is_null())
+			{
+				json::value play = result[0];
+				if (play[U("playerid")].is_null())
+				{
+					return "";
+				}
+				playerid = play[U("playerid")].as_number().to_int32();
+				needs_playerid = true;
+			}
+		}
+
+		if ((pos = strchr(item, '#')) != NULL)
+		{
+			*pos = NULL;
+			retsubitem = ++pos;
+
+			log("item %s, retsubItem %s", item, retsubitem);
+		}
+
+		if (strlen(item))
+		{
+			properties[0] = json::value::string(utility::conversions::to_string_t(item));
+		
+
+			params[U("properties")] = properties;
+			if (needs_playerid)
+			{
+				params[U("playerid")] = playerid;
+			}
+			data[U("params")] = params;
+		}
+
+		json::value ret_val = ws_send_wait(utility::conversions::to_string_t(method), data);
+
+		if (ret_val.size() > 0)
+		{ 
+			if (!ret_val[U("error")].is_null())
+			{
+				item_val = ret_val[U("error")];
+				item_val = item_val[U("message")];
+			}
+			else
+			{
+				json::value result = ret_val[U("result")];
+				if (retsubitem == NULL)
+				{
+					ret_item = result[U("item")];
+					if (ret_item.is_null())
+					{
+						ret_item = result;
+					}
+					item_val = ret_item[utility::conversions::to_string_t(item)];
+				}
+				else
+				{
+					json::value ret_item;
+					if (strlen(item) == 0)
+					{
+						result = result[0];
+					}
+					else
+					{
+						result = result[utility::conversions::to_string_t(item)];
+					}
+					ret_item = result[utility::conversions::to_string_t(retsubitem)];
+					item_val = ret_item;
+				}
+
+				if (item_val.is_null())
+				{
+					return string("");
+				}
+			}
+			string_t item_str;
+		
+			if (item_val.is_string())
+			{
+				item_str = item_val.as_string();
+			}
+			else if (item_val.is_integer())
+			{
+				item_str = to_wstring(item_val.as_number().to_int32());
+			}
+			else if (item_val.is_double())
+			{
+				item_str = to_wstring(item_val.as_number().to_double());
+			}
+			return utility::conversions::to_utf8string(item_str);
+		}
+		else
+		{
+			return "";
+		}
+	}
+	catch (...)
+	{
+		return string("Error Caught");
 	}
 }
 

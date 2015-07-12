@@ -59,7 +59,7 @@ config_t configs[] = {
 	{ "ff_str",		MSTR, 0,	"Fast-Forward" },
 	{ "rewind_str",	MSTR, 0,	"Rewind" },
 	{ "volume_str", MSTR, 0,    "Volume"},	
-
+	{ "knf_str", MSTR, 0,       "Kodi not found"},	
 };
 
 unsigned int get_config(configs_e index)

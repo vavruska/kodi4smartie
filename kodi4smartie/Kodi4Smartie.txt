@@ -8,7 +8,7 @@ Installation
 
 1) Download the zip file containing the Kodi4Smartie DLL and associated files.
 2) Copy the kodi4smartie.dll and the kodi4smartie.cfg to the LCD Smartie plugins folder.
-3) Copy the cpprest120_2_5.dll to the LCD Smartie folder.
+3) Copy the cpprest120_2_6.dll to the LCD Smartie folder.
 
 The DLL provides the following LCD Smartie functions:
 
@@ -19,6 +19,17 @@ Function 2: Is meant to be displayed on line 2 of an LCD display. Upon initial p
 Function 3: Lets you know if Kodi is running. It can be used for custom actions inside LCD Smartie.
 
 Function 4: Displays the current version of the Kodi4Smartie DLL. Not really useful unless you are unsure which version of the DLL you are running.
+
+Function 5: Displays custom information from kodi.
+	usage: $dll(Kodi4smartie,1,method,item#sub-item)
+	Example 1: 
+		$dll(kodi4smartie,5,Player.GetPlayers,#type)
+
+		In this example we are calling the Player.GetPlayers method. This method returns PlayerId and type. We want the value associated with type.
+	Example 2:
+		$dll(kodi4smartie,5,Player.GetProperties,totaltime#minutes)
+
+		In this example we calling the Pkayer.GetProperties method to get the totaltime item. The item returns hours,minutes,second and milisecond. We are looking for the the minutes.
 
 Configuring LCD Smartie
 -----------------------

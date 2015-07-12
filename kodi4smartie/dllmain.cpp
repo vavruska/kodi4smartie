@@ -36,13 +36,15 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 char line1[255];
 char line2[255];
+char line4[255];
+char line5[255];
 extern bool connected;
-bool connecting = false;
+extern bool connecting;
 HANDLE connect_timer;
 
 #define KODI_DLL_VERSION "kodi4smartie"
 #define KODI_DLL_VERSION_MAJ "1"
-#define KODI_DLL_VERSION_MIN "0"
+#define KODI_DLL_VERSION_MIN "1"
 
 //forward declaration
 void CALLBACK try_connect(PVOID lpParameter, BOOLEAN TimerOrWaitFired);
@@ -68,7 +70,7 @@ __declspec(dllexport)  void __stdcall  SmartieInit()
 __declspec(dllexport)  void __stdcall  SmartieFini()
 {
 	stop_timers();
-	ws_close();
+	//ws_close();
 	log("SmartieFini");
 
 }
@@ -139,6 +141,11 @@ __declspec(dllexport)  char * __stdcall  function2(char *param1, char *param2)
 {
 	string display;
 
+	if (!connected && !connecting)// && is_kodi_running())
+	{
+		connecting = true;
+		CreateTimerQueueTimer(&connect_timer, NULL, try_connect, NULL, get_config(cCONNECT_DELAY) * 1000, 0, 0);
+	}
 	if (get_mode().compare("movie") == 0)
 	{
 		display = get_time();
@@ -213,10 +220,57 @@ __declspec(dllexport)  char * __stdcall  function3(char *param1, char *param2)
 //return the dll name and version
 __declspec(dllexport)  char * __stdcall  function4(char *param1, char *param2)
 {
-	string version = string(KODI_DLL_VERSION) + string(" v") +
+	string version = string("$Center(") +
+		string(KODI_DLL_VERSION) + string(" v") +
 		string(KODI_DLL_VERSION_MAJ) + string(".") +
-		string(KODI_DLL_VERSION_MIN);
-	return (char *) version.c_str();
+		string(KODI_DLL_VERSION_MIN) + string(")");
+
+	strcpy_s(line4, version.c_str());
+	return line4;
+}
+
+//custom commands
+// param1= kodi json method
+// param2= kodi json item to get. If item is in the format of item#subitem then 
+//		   item will be requested but the subitem will be returned.
+//
+// Examples: 
+// function5("Player.GetProperties","percentage") returns the percentage done
+//		from the current title being played.
+// function5("Player.GetProperties","time#minutes") returns the minutes into the
+//		current title being played.
+// function5("Player.GetPlayers","#type") returns the current player type.
+//
+__declspec(dllexport)  char * __stdcall  function5(char *param1, char *param2)
+{ 
+
+	if (!connected && !connecting)// && is_kodi_running())
+	{
+		connecting = true;
+		CreateTimerQueueTimer(&connect_timer, NULL, try_connect, NULL, get_config(cCONNECT_DELAY) * 1000, 0, 0);
+	}
+	if (connected)
+	{
+		char *method = _strdup(param1);
+		char *item = _strdup(param2);
+		std::string ret = get_custom_data(method, item);
+		strcpy_s(line5, ret.c_str());
+		free(method);
+		free(item);
+		return line5;
+	}
+	else
+	{
+		if (is_kodi_running())
+		{
+			return "";
+		}
+		else
+		{
+			strcpy_s(line5, get_config_str(sKNF));
+			return line5;
+		}
+	}
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -288,12 +342,15 @@ __declspec(dllexport) bool __stdcall is_kodi_running()
 void CALLBACK try_connect(PVOID lpParameter, BOOLEAN TimerOrWaitFired)
 {
 	
-	if (!connected) // && is_kodi_running())
+	if (!connected && is_kodi_running())
 	{
 		ws_connect();
 	}
+	else
+	{
+		connecting = false;
+	}
 
-	connecting = false;
 }
 
 string center(string in, unsigned int width)
