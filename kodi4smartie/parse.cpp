@@ -23,6 +23,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include <cpprest/json.h>
 #include <ppltasks.h>
 #include <concurrent_vector.h>
+#include <regex>
+#include <map>
+#include <locale.h> 
 
 #include "interface.hpp"
 #include "logging.hpp"
@@ -33,6 +36,8 @@ using namespace web;
 using namespace concurrency;
 
 
+typedef map<std::regex *, string> regex_map_t;
+extern regex_map_t regex_map;
 
 // Notifications we handle
 //"Player.OnPlay"
@@ -212,6 +217,8 @@ void handle_on_play(json::value in)
 					json::value filepath = item[U("file")];
 					std::vector<wchar_t> file(1024);
 
+					setlocale(LC_ALL, "");
+					filepath =json::value(U("æ ø å cinema3"));
 					_wsplitpath_s(filepath.as_string().c_str(), NULL, 0, NULL, 0, file.data(), file.size(), NULL, 0);
 					set_title(string_t(file.data()));
 				}
@@ -441,5 +448,99 @@ std::string get_custom_data(char *method, char *item)
 	}
 }
 
+std::string get_custom_label(char *method, char *item)
+{
+	json::value data;
+	json::value params;
+	json::value properties;
+	json::value ret_item;
+	json::value item_val;
+	char *retsubitem = NULL;
+	regex_map_t::iterator it;
+
+	try
+	{
+		if (strlen(item))
+		{
+			properties[0] = json::value::string(utility::conversions::to_string_t(item));
+			params[U("labels")] = properties;
+			data[U("params")] = params;
+		}
+
+		json::value ret_val = ws_send_wait(utility::conversions::to_string_t(method), data);
+
+		if (ret_val.size() > 0)
+		{
+			if (!ret_val[U("error")].is_null())
+			{
+				item_val = ret_val[U("error")];
+				item_val = item_val[U("message")];
+			}
+			else
+			{
+				json::value result = ret_val[U("result")];
+				if (retsubitem == NULL)
+				{
+					ret_item = result[U("item")];
+					if (ret_item.is_null())
+					{
+						ret_item = result;
+					}
+					item_val = ret_item[utility::conversions::to_string_t(item)];
+				}
+				else
+				{
+					json::value ret_item;
+					if (strlen(item) == 0)
+					{
+						result = result[0];
+					}
+					else
+					{
+						result = result[utility::conversions::to_string_t(item)];
+					}
+					ret_item = result[utility::conversions::to_string_t(retsubitem)];
+					item_val = ret_item;
+				}
+
+				if (item_val.is_null())
+				{
+					return string("");
+				}
+			}
+			string_t item_str;
+
+			if (item_val.is_string())
+			{
+				item_str = item_val.as_string();
+			}
+			else if (item_val.is_integer())
+			{
+				item_str = to_wstring(item_val.as_number().to_int32());
+			}
+			else if (item_val.is_double())
+			{
+				item_str = to_wstring(item_val.as_number().to_double());
+			}
+
+			//sanitize the results (replace characters)
+			string results = string(item_str.begin(), item_str.end());
+
+			for (it = regex_map.begin(); it != regex_map.end(); it++)
+			{
+				results = regex_replace(results, *it->first, it->second);
+			}
+			return results;
+		}
+		else
+		{
+			return "";
+		}
+	}
+	catch (...)
+	{
+		return string("Error Caught");
+	}
+}
 
 

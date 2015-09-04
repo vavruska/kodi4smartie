@@ -11,6 +11,7 @@ enum configs_e {
 	cKODI_EXE,
 	cCONNECT_DELAY,
 	cTIME_FORMAT,
+	cDISABLE_ICON,
 
 	//strings. override these in the config file to localize
 	sWELCOME,

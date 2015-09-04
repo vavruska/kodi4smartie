@@ -75,7 +75,8 @@ void set_title(string_t newtitle)
 	regex_map_t::iterator it;
 
 	mtx.lock();
-	title = utility::conversions::utf16_to_utf8(newtitle);
+	
+	title = string(newtitle.begin(), newtitle.end());
 
 	//execute each regex 
 	for (it = regex_map.begin(); it != regex_map.end(); it++)
@@ -175,7 +176,6 @@ string get_icon(int custom)
 		display += string(")$Chr(") + std::to_string(cust[custom]) + string(")");
 	}
 	mtx.unlock();
-
 	return display;
 }
 

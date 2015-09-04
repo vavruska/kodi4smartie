@@ -23,3 +23,4 @@ void handle_on_stop();
 void handle_speed_change(json::value incoming);
 void handle_volume_change(json::value incoming);
 std::string get_custom_data(char *method, char *item);
+std::string get_custom_label(char *method, char *item);

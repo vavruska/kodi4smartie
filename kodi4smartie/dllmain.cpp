@@ -38,6 +38,8 @@ char line1[255];
 char line2[255];
 char line4[255];
 char line5[255];
+char line6[255];
+char line7[255];
 extern bool connected;
 extern bool connecting;
 HANDLE connect_timer;
@@ -106,24 +108,28 @@ __declspec(dllexport)  char * __stdcall  function1(char *param1, char *param2)
 		CreateTimerQueueTimer(&connect_timer, NULL, try_connect, NULL, get_config(cCONNECT_DELAY) * 1000, 0, 0);
 	}
 
+	if (get_config(cDISABLE_ICON) == 0)
+	{
+		display = get_icon(7) + string(" ");
+	}
 	if ((get_mode().compare("movie") == 0) ||
 		(get_mode().compare("episode") == 0) ||
 		(get_mode().compare("song") == 0) ||
 		(get_mode().compare("picture") == 0))
 	{
-		display = get_icon(7) + string(" ") + get_title();
+		display += get_title();
 	}
 	else if (get_mode().compare("channel") == 0)
 	{
-		display = get_icon(7) + string(" ") + get_tv_info();
+		display += get_tv_info();
 	}
 	else if (get_mode().compare("volume") == 0)
 	{
-		display = get_icon(7) + center(get_config_str(sVOLUME), get_config(cLCD_WIDTH) - 2);
+		display += center(get_config_str(sVOLUME), get_config(cLCD_WIDTH) - (2 * (get_config(cDISABLE_ICON) == 0)));
 	}
 	else
 	{
-		display = get_icon(7) + center(string(get_config_str(sWELCOME)), get_config(cLCD_WIDTH) - 2);
+		display += center(string(get_config_str(sWELCOME)), get_config(cLCD_WIDTH) - (2 * (get_config(cDISABLE_ICON) == 0)));
 	}
 
 	strcpy_s(line1, display.c_str());
@@ -239,7 +245,7 @@ __declspec(dllexport)  char * __stdcall  function4(char *param1, char *param2)
 //		from the current title being played.
 // function5("Player.GetProperties","time#minutes") returns the minutes into the
 //		current title being played.
-// function5("Player.GetPlayers","#type") returns the current player type.
+// function5("Player.GetActivePlayers","#type") returns the current player type.
 //
 __declspec(dllexport)  char * __stdcall  function5(char *param1, char *param2)
 { 
@@ -269,6 +275,51 @@ __declspec(dllexport)  char * __stdcall  function5(char *param1, char *param2)
 		{
 			strcpy_s(line5, get_config_str(sKNF));
 			return line5;
+		}
+	}
+}
+
+//display icon
+__declspec(dllexport)  char * __stdcall  function6(char *param1, char *param2)
+{
+	string display;
+
+	display = get_icon(7);
+
+	strcpy_s(line6, display.c_str());
+
+	return line6;
+}
+
+//display labels
+__declspec(dllexport)  char * __stdcall  function7(char *param1, char *param2)
+{
+
+	if (!connected && !connecting)// && is_kodi_running())
+	{
+		connecting = true;
+		CreateTimerQueueTimer(&connect_timer, NULL, try_connect, NULL, get_config(cCONNECT_DELAY) * 1000, 0, 0);
+	}
+	if (connected)
+	{
+		char *method = _strdup(param1);
+		char *item = _strdup(param2);
+		std::string ret = get_custom_label(method, item);
+		strcpy_s(line7, ret.c_str());
+		free(method);
+		free(item);
+		return line7;
+	}
+	else
+	{
+		if (is_kodi_running())
+		{
+			return "";
+		}
+		else
+		{
+			strcpy_s(line7, get_config_str(sKNF));
+			return line7;
 		}
 	}
 }

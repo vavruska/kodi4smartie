@@ -11,6 +11,8 @@ extern "C" {
 	__declspec(dllexport)  char * __stdcall  function3(char *param1, char *param2);
 	__declspec(dllexport)  char * __stdcall  function4(char *param1, char *param2);
 	__declspec(dllexport)  char * __stdcall  function5(char *param1, char *param2);
+	__declspec(dllexport)  char * __stdcall  function6(char *param1, char *param2);
+	__declspec(dllexport)  char * __stdcall  function7(char *param1, char *param2);
 	__declspec(dllexport)  bool __stdcall is_kodi_running();
 
 }

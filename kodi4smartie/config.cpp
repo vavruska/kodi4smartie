@@ -50,6 +50,7 @@ config_t configs[] = {
 	{ "kodiexe",	MSTR, 0,	"Kodi.exe"},	
 	{ "connect_delay", MINT, 1, "" },
 	{ "time_format", MSTR, 0, "mm/dd/yy hh:nn" },
+	{ "disable_icon", MINT, 0, "" },
 
 	//strings. override these in the config file to localize
 	{ "welcome", MSTR, 0, "Kodi Media Center" },
@@ -93,6 +94,10 @@ void set_config(char *key, char *data)
 	{
 		if (_stricmp(key, configs[loop].key) == 0)
 		{
+			OutputDebugStringA("Setting config item");
+			OutputDebugStringA(key);
+			OutputDebugStringA(data);
+
 			if (configs[loop].datatype == MINT)
 			{
 				configs[loop].val = atoi(data);
@@ -124,11 +129,15 @@ void set_regex(char *data)
 	{
 		regex *reg = new regex(string(data));
 		regex_map.insert(pair<regex *, string>(reg, string(comma)));
+		OutputDebugStringA("Adding regex");
+		OutputDebugStringA(data);
+		OutputDebugStringA(comma);
 	}
 	catch (...)
 	{
 		OutputDebugStringA("Bad RegEx found");
 		OutputDebugStringA(data);
+		OutputDebugStringA(comma);
 	}
 }
 
@@ -142,7 +151,7 @@ void init_config()
 	if (fopen_s(&fd, "plugins\\kodi4smartie.cfg", "r") == 0)
 	{
 		while (fgets(line, sizeof(line), fd))
-		{
+		{	
 			if (line[0] == '/' && line[1] == '/')
 			{
 				continue;
@@ -152,6 +161,9 @@ void init_config()
 			{
 				*equal = 0;
 				data = equal + 1;
+				OutputDebugStringA("config item");
+				OutputDebugStringA(line);
+				OutputDebugStringA(data);
 
 				//remove the trailing newline
 				if (data[strlen(data)] == '\n')
