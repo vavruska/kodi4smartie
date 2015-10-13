@@ -40,13 +40,14 @@ char line4[255];
 char line5[255];
 char line6[255];
 char line7[255];
+char line8[255];
 extern bool connected;
 extern bool connecting;
 HANDLE connect_timer;
 
-#define KODI_DLL_VERSION "kodi4smartie"
 #define KODI_DLL_VERSION_MAJ "1"
 #define KODI_DLL_VERSION_MIN "1"
+#define KODI_DLL_BUILD_DATE __DATE__
 
 //forward declaration
 void CALLBACK try_connect(PVOID lpParameter, BOOLEAN TimerOrWaitFired);
@@ -226,10 +227,10 @@ __declspec(dllexport)  char * __stdcall  function3(char *param1, char *param2)
 //return the dll name and version
 __declspec(dllexport)  char * __stdcall  function4(char *param1, char *param2)
 {
-	string version = string("$Center(") +
-		string(KODI_DLL_VERSION) + string(" v") +
+	string version = string("$Center(") + string(" v") +
 		string(KODI_DLL_VERSION_MAJ) + string(".") +
-		string(KODI_DLL_VERSION_MIN) + string(")");
+		string(KODI_DLL_VERSION_MIN) + " " +
+		string(KODI_DLL_BUILD_DATE) + string(")");
 
 	strcpy_s(line4, version.c_str());
 	return line4;
@@ -322,6 +323,50 @@ __declspec(dllexport)  char * __stdcall  function7(char *param1, char *param2)
 			return line7;
 		}
 	}
+}
+
+//display labels
+__declspec(dllexport)  char * __stdcall  function8(char *param1, char *param2)
+{
+
+	if (!connected && !connecting)// && is_kodi_running())
+	{
+		connecting = true;
+		CreateTimerQueueTimer(&connect_timer, NULL, try_connect, NULL, get_config(cCONNECT_DELAY) * 1000, 0, 0);
+	}
+	if (connected)
+	{
+		char *method = _strdup(param1);
+		char *item = _strdup(param2);
+		std::string ret = get_custom_label(method, item);
+		strcpy_s(line7, ret.c_str());
+		free(method);
+		free(item);
+		return "";
+	}
+	else
+	{
+		return "";
+	}
+}
+
+//display state
+//	kodi_not_running(0),none(1), play(2), stop, pause, ff, rew, mute,
+__declspec(dllexport)  char * __stdcall  function9(char *param1, char *param2)
+{
+	string display;
+	if (is_kodi_running())
+	{ 
+
+		display = to_string((int) get_icon_val()+1);
+
+		strcpy_s(line8, display.c_str());
+	}
+	else
+	{
+		strcpy_s(line8, "0");
+	}
+	return line8;
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,

@@ -12,6 +12,7 @@ enum configs_e {
 	cCONNECT_DELAY,
 	cTIME_FORMAT,
 	cDISABLE_ICON,
+	CIDLE_TIMER,
 
 	//strings. override these in the config file to localize
 	sWELCOME,

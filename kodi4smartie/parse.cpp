@@ -36,8 +36,8 @@ using namespace web;
 using namespace concurrency;
 
 
-typedef map<std::regex *, string> regex_map_t;
-extern regex_map_t regex_map;
+typedef map<string, string> custom_data_map_t;
+custom_data_map_t custom_data;
 
 // Notifications we handle
 //"Player.OnPlay"
@@ -217,8 +217,6 @@ void handle_on_play(json::value in)
 					json::value filepath = item[U("file")];
 					std::vector<wchar_t> file(1024);
 
-					setlocale(LC_ALL, "");
-					filepath =json::value(U("æ ø å cinema3"));
 					_wsplitpath_s(filepath.as_string().c_str(), NULL, 0, NULL, 0, file.data(), file.size(), NULL, 0);
 					set_title(string_t(file.data()));
 				}
@@ -435,7 +433,11 @@ std::string get_custom_data(char *method, char *item)
 			{
 				item_str = to_wstring(item_val.as_number().to_double());
 			}
-			return utility::conversions::to_utf8string(item_str);
+			string results = string(item_str.begin(), item_str.end());
+
+			sanitize(results);
+			
+			return results;
 		}
 		else
 		{
@@ -456,7 +458,6 @@ std::string get_custom_label(char *method, char *item)
 	json::value ret_item;
 	json::value item_val;
 	char *retsubitem = NULL;
-	regex_map_t::iterator it;
 
 	try
 	{
@@ -525,11 +526,26 @@ std::string get_custom_label(char *method, char *item)
 
 			//sanitize the results (replace characters)
 			string results = string(item_str.begin(), item_str.end());
+			
+			sanitize(results);
 
-			for (it = regex_map.begin(); it != regex_map.end(); it++)
+			string key = string(method) + string(item);
+			custom_data_map_t::iterator it;
+
+			if ((it = custom_data.find(key)) != custom_data.end())
 			{
-				results = regex_replace(results, *it->first, it->second);
+				if (it->second != results)
+				{ 
+					it->second = results;
+					start_idle_timer();
+				}
 			}
+			else
+			{
+				custom_data.insert(pair<string, string>(key, results));
+				start_idle_timer();
+			}
+
 			return results;
 		}
 		else

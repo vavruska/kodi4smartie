@@ -51,6 +51,7 @@ config_t configs[] = {
 	{ "connect_delay", MINT, 1, "" },
 	{ "time_format", MSTR, 0, "mm/dd/yy hh:nn" },
 	{ "disable_icon", MINT, 0, "" },
+	{ "idle_timer", MINT, 0, "" },
 
 	//strings. override these in the config file to localize
 	{ "welcome", MSTR, 0, "Kodi Media Center" },

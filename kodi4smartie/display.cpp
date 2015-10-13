@@ -58,6 +58,7 @@ string_t album_info;
 int track_info;
 HANDLE reset_timer = NULL;
 HANDLE time_timer = NULL;
+HANDLE idle_timer = NULL;
 bool continue_timer;
 std::mutex mtx;
 int extra_info = 0;
@@ -70,19 +71,24 @@ extern regex_map_t regex_map;
 void CALLBACK reset_fired(PVOID lpParameter, BOOLEAN TimerOrWaitFired);
 void stop_reset_timer();
 
-void set_title(string_t newtitle)
+void sanitize(string &incoming)
 {
 	regex_map_t::iterator it;
-
-	mtx.lock();
-	
-	title = string(newtitle.begin(), newtitle.end());
 
 	//execute each regex 
 	for (it = regex_map.begin(); it != regex_map.end(); it++)
 	{
-		title = regex_replace(title, *it->first,  it->second);
+		incoming = regex_replace(incoming, *it->first, it->second);
 	}
+}
+
+void set_title(string_t newtitle)
+{
+	mtx.lock();
+	
+	title = string(newtitle.begin(), newtitle.end());
+
+	sanitize(title);
 
 	//remove leading whitespace/cr/lf
 	int pos = title.find_first_not_of("\n\r\t ");
@@ -113,6 +119,7 @@ void set_icon(icon_t icon_val)
 	case pause:
 	case ff:
 	case rew:
+	case idle:
 		icon = icon_val;
 		break;
 	default:
@@ -147,6 +154,7 @@ string get_icon(int custom)
 	switch (icon_to_display)
 	{
 	case none:
+	case idle:
 		display = " ";
 		break;
 	case play:
@@ -194,7 +202,7 @@ void set_mode(string_t new_mode)
 string get_mode()
 {
 	mtx.lock();
-	string convert = utility::conversions::utf16_to_utf8(mode);
+	string convert = string(mode.begin(), mode.end());
 	mtx.unlock();
 
 	return convert;
@@ -252,7 +260,7 @@ void set_time(int percentage, string_t time, string_t totaltime)
 string get_time()
 {
 	mtx.lock();
-	string convert = utility::conversions::utf16_to_utf8(time_str);
+	string convert = string(time_str.begin(), time_str.end());
 	mtx.unlock();
 	return convert;
 }
@@ -342,7 +350,7 @@ string get_episode_info()
 {
 	string convert;
 	mtx.lock();
-	convert = utility::conversions::utf16_to_utf8(episode_info);
+	convert = string(episode_info.begin(), episode_info.end());
 	mtx.unlock();
 
 	return convert;
@@ -369,7 +377,7 @@ string get_tv_info()
 {
 	string convert;
 	mtx.lock();
-	convert = utility::conversions::utf16_to_utf8(tv_info);
+	convert = string(tv_info.begin(), tv_info.end());
 	mtx.unlock();
 
 	return convert;
@@ -392,11 +400,11 @@ string get_song_info()
 	mtx.lock();
 	if (extra_info > 6)
 	{
-		convert = utility::conversions::utf16_to_utf8(artist_info);
+		convert = string(artist_info.begin(), artist_info.end());
 	}
 	else if (extra_info > 3)
 	{
-		convert = utility::conversions::utf16_to_utf8(album_info);
+		convert = string(album_info.begin(), album_info.end());
 	}
 	else
 	{
@@ -407,7 +415,7 @@ string get_song_info()
 		else
 		{
 			//if no track then display the album for an extra cycle
-			convert = utility::conversions::utf16_to_utf8(album_info);
+			convert = string(album_info.begin(), album_info.end());
 			extra_info = 0;
 		}
 	}
@@ -432,6 +440,11 @@ void CALLBACK reset_fired(PVOID lpParameter, BOOLEAN TimerOrWaitFired)
 		mode = prev_mode;
 	}
 	mtx.unlock();
+
+	if (get_icon_val() == none)
+	{
+		start_idle_timer();
+	}
 }
 
 void stop_reset_timer()
@@ -481,6 +494,30 @@ void stop_time_timer()
 	{
 		DeleteTimerQueueTimer(NULL, time_timer, INVALID_HANDLE_VALUE);
 		time_timer = NULL;
+	}
+}
+
+void stop_idle_timer()
+{
+	if (idle_timer)
+	{
+		DeleteTimerQueueTimer(NULL, idle_timer, INVALID_HANDLE_VALUE);
+		idle_timer = NULL;
+	}
+}
+
+void CALLBACK idle_handler(PVOID lpParameter, BOOLEAN TimerOrWaitFired)
+{
+	set_icon(idle);
+}
+
+void start_idle_timer()
+{
+	if (get_config(CIDLE_TIMER))
+	{
+		set_icon(none);
+		stop_idle_timer();
+		CreateTimerQueueTimer(&idle_timer, NULL, idle_handler, NULL, get_config(CIDLE_TIMER) * 1000, 1000, 0);
 	}
 }
 

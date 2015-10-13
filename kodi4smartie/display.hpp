@@ -13,8 +13,10 @@ enum icon_t {
 	ff,
 	rew,
 	mute,
+	idle=10,
 };
 
+void sanitize(string &incoming);
 void set_title(string_t newtitle);
 string get_title();
 void set_icon(icon_t icon_val);
@@ -40,4 +42,5 @@ int get_volume();
 void show_stop();
 void stop_time_timer();
 void start_time_timer(int start_interval_secs);
+void start_idle_timer();
 void stop_timers();
