@@ -369,6 +369,23 @@ __declspec(dllexport)  char * __stdcall  function9(char *param1, char *param2)
 	return line8;
 }
 
+//reset idle timer
+__declspec(dllexport)  char * __stdcall  function10(char *param1, char *param2)
+{
+	stop_idle_timer();
+	return "";
+}
+
+//get connected state.
+__declspec(dllexport)  char * __stdcall  function11(char *param1, char *param2)
+{
+	if (connected)
+	{
+		return "1";
+	}
+	return "0";
+}
+
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
                        LPVOID lpReserved

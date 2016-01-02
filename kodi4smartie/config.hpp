@@ -3,7 +3,6 @@
 enum configs_e {
 	cLOGGING,
 	cNEWFILE,
-	cHOST,
 	cPORT,
 	cLCD_WIDTH,
 	cUSE_BARS,

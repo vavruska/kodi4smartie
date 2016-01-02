@@ -80,7 +80,7 @@ __declspec(dllexport) void display(json::value val, utility::string_t offset)
 __declspec(dllexport) void ws_connect()
 {
 	utility::string_t host = utility::string_t(U("ws://")) +
-		utility::conversions::to_string_t(get_config_str(cHOST)) +
+		utility::conversions::to_string_t("LOCALHOST") +
 		utility::string_t(U(":")) +
 		utility::conversions::to_string_t(get_config_str(cPORT));
 

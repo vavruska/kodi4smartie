@@ -42,10 +42,9 @@ regex_map_t regex_map;
 config_t configs[] = {
 	{ "logging",	MINT, 0,	"" },
 	{ "newfile",	MINT, 1,	"" },
-	{ "host",		MSTR, 0,	"LOCALHOST" },
 	{ "port",		MSTR, 0,	"9090" },
 	{ "lcd_width",	MINT, 20,	"" },
-	{ "use_bars",	MSTR, 1,	"" },
+	{ "use_bars",	MINT, 1,	"" },
 	{ "reset_delay",MINT, 3,	"" },
 	{ "kodiexe",	MSTR, 0,	"Kodi.exe"},	
 	{ "connect_delay", MINT, 1, "" },

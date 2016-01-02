@@ -44,3 +44,4 @@ void stop_time_timer();
 void start_time_timer(int start_interval_secs);
 void start_idle_timer();
 void stop_timers();
+void stop_idle_timer();
