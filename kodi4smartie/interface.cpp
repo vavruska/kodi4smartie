@@ -1,7 +1,7 @@
 /*
 Kodi4Smartie - A DLL to display information from Kodi on a LCD character display
 
-Copyright (C) 2015  Chris Vavruska
+Copyright (C) 2016  Chris Vavruska
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
