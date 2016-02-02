@@ -41,7 +41,7 @@ void log(char *format, ...)
 
 		time(&rawtime);
 		localtime_s(&timeinfo, &rawtime);
-		strftime(timestr, sizeof(timestr), "%m/%d/%y %H:%M", &timeinfo);
+		strftime(timestr, sizeof(timestr), "%m/%d/%y %H:%M:%S", &timeinfo);
 
 		fprintf(log_fd, "%s: ", timestr);
 		va_start(arguments, format);

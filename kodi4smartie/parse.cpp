@@ -149,6 +149,7 @@ void handle_on_play(json::value in)
 			json::value title = item[U("title")];
 			json::value type = item[U("type")];
 			set_mode(type.as_string());
+			//stop_idle_timer(); //not sure I like this this
 			set_icon(play);
 			if ((title.is_null() || 
 				(type.as_string().compare(U("channel")) == 0) || 

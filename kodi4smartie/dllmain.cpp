@@ -45,8 +45,8 @@ extern bool connected;
 extern bool connecting;
 HANDLE connect_timer;
 
-#define KODI_DLL_VERSION_MAJ "1"
-#define KODI_DLL_VERSION_MIN "1"
+#define KODI_DLL_VERSION_MAJ "2"
+#define KODI_DLL_VERSION_MIN "0b1"
 #define KODI_DLL_BUILD_DATE __DATE__
 
 //forward declaration
@@ -56,7 +56,7 @@ string center(string in, unsigned int width);
 
 
 /*********************************************************
-*         SmartieInit                                   *
+*         SmartieInit                                   
 *********************************************************/
 __declspec(dllexport)  void __stdcall  SmartieInit()
 {
@@ -68,7 +68,7 @@ __declspec(dllexport)  void __stdcall  SmartieInit()
 }
 
 /*********************************************************
-*         SmartieFini                                   *
+*         SmartieFini                                   
 *********************************************************/
 __declspec(dllexport)  void __stdcall  SmartieFini()
 {
@@ -79,7 +79,7 @@ __declspec(dllexport)  void __stdcall  SmartieFini()
 }
 
 /*********************************************************
-*         GetMinRefreshInterval                         *
+*         GetMinRefreshInterval                         
 *********************************************************/
 __declspec(dllexport)  int __stdcall  GetMinRefreshInterval()
 {
@@ -96,8 +96,8 @@ __declspec(dllexport)  int __stdcall  GetMinRefreshInterval()
 
 
 /*********************************************************
-*         Function 1                                     *
-*  Returns the first display line       			     *
+*  Function 1                                            
+*  Returns the first display line       			     
 *********************************************************/
 __declspec(dllexport)  char * __stdcall  function1(char *param1, char *param2)
 {
@@ -141,8 +141,8 @@ __declspec(dllexport)  char * __stdcall  function1(char *param1, char *param2)
 
 
 /*********************************************************
-*         Function 2                                     *
-*  Returns the second display line       			     *
+*  Function 2                                            
+*  Returns the second display line       			     
 *********************************************************/
 __declspec(dllexport)  char * __stdcall  function2(char *param1, char *param2)
 {
@@ -213,8 +213,10 @@ __declspec(dllexport)  char * __stdcall  function2(char *param1, char *param2)
 	return line2;
 }
 
-//check to see if kodi is running
-//only works if we are running on the same machine as Kodi.exe
+/*********************************************************
+*  Function 3                                            
+*  Check to see if kodi is running       			     
+**********************************************************/
 __declspec(dllexport)  char * __stdcall  function3(char *param1, char *param2)
 {
 	if (is_kodi_running())
@@ -224,7 +226,10 @@ __declspec(dllexport)  char * __stdcall  function3(char *param1, char *param2)
 	return "0";
 }
 
-//return the dll name and version
+/*********************************************************
+*  Function 4                                            
+*  Return the dll name and version       			     
+**********************************************************/
 __declspec(dllexport)  char * __stdcall  function4(char *param1, char *param2)
 {
 	string version = string("$Center(") + string(" v") +
@@ -236,18 +241,21 @@ __declspec(dllexport)  char * __stdcall  function4(char *param1, char *param2)
 	return line4;
 }
 
-//custom commands
-// param1= kodi json method
-// param2= kodi json item to get. If item is in the format of item#subitem then 
-//		   item will be requested but the subitem will be returned.
-//
-// Examples: 
-// function5("Player.GetProperties","percentage") returns the percentage done
-//		from the current title being played.
-// function5("Player.GetProperties","time#minutes") returns the minutes into the
-//		current title being played.
-// function5("Player.GetActivePlayers","#type") returns the current player type.
-//
+/********************************************************************************
+*  Function 5																	
+*  Custom commands																
+*																				
+* param1= kodi json method														
+* param2= kodi json item to get. If item is in the format of item#subitem then	
+*		   item will be requested but the subitem will be returned.				
+*																				
+* Examples:																		
+* function5("Player.GetProperties","percentage") returns the percentage done	
+*		from the current title being played.									
+* function5("Player.GetProperties","time#minutes") returns the minutes into the	
+*		current title being played.												
+* function5("Player.GetActivePlayers","#type") returns the current player type.	
+*********************************************************************************/
 __declspec(dllexport)  char * __stdcall  function5(char *param1, char *param2)
 { 
 
@@ -280,7 +288,10 @@ __declspec(dllexport)  char * __stdcall  function5(char *param1, char *param2)
 	}
 }
 
-//display icon
+/*********************************************************
+* Function 6                                             
+* Display icon           			                     
+**********************************************************/
 __declspec(dllexport)  char * __stdcall  function6(char *param1, char *param2)
 {
 	string display;
@@ -292,7 +303,11 @@ __declspec(dllexport)  char * __stdcall  function6(char *param1, char *param2)
 	return line6;
 }
 
-//display labels
+/*********************************************************
+* Function 7                                             
+* Display label
+*
+**********************************************************/
 __declspec(dllexport)  char * __stdcall  function7(char *param1, char *param2)
 {
 
@@ -325,7 +340,12 @@ __declspec(dllexport)  char * __stdcall  function7(char *param1, char *param2)
 	}
 }
 
-//display labels
+/*********************************************************
+* Function 8
+* Display label
+* Same as function7 but displays nothing is kodi is not 
+* found to be running.
+**********************************************************/
 __declspec(dllexport)  char * __stdcall  function8(char *param1, char *param2)
 {
 
@@ -350,8 +370,12 @@ __declspec(dllexport)  char * __stdcall  function8(char *param1, char *param2)
 	}
 }
 
-//display state
-//	kodi_not_running(0),none(1), play(2), stop, pause, ff, rew, mute,
+/*********************************************************
+* Function 9
+* Display kodi state
+* kodi_not_running(0),none(1), play(2), stop(3), pause(4),
+* ff(5), rew(6), mute(7),idle(11 -- see idle_timer)
+**********************************************************/
 __declspec(dllexport)  char * __stdcall  function9(char *param1, char *param2)
 {
 	string display;
@@ -369,6 +393,10 @@ __declspec(dllexport)  char * __stdcall  function9(char *param1, char *param2)
 	return line8;
 }
 
+/*********************************************************
+* Function 10
+* Reset idle timer
+**********************************************************/
 //reset idle timer
 __declspec(dllexport)  char * __stdcall  function10(char *param1, char *param2)
 {
@@ -376,7 +404,12 @@ __declspec(dllexport)  char * __stdcall  function10(char *param1, char *param2)
 	return "";
 }
 
-//get connected state.
+/*********************************************************
+* Function 11
+* Get connected state -- better than function 3 since 
+* function 3 will return true before you can connect to
+* kodi.
+**********************************************************/
 __declspec(dllexport)  char * __stdcall  function11(char *param1, char *param2)
 {
 	if (connected)

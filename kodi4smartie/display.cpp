@@ -503,12 +503,14 @@ void stop_idle_timer()
 	{
 		DeleteTimerQueueTimer(NULL, idle_timer, INVALID_HANDLE_VALUE);
 		idle_timer = NULL;
+		::log("Idle timer:stop");
 	}
 }
 
 void CALLBACK idle_handler(PVOID lpParameter, BOOLEAN TimerOrWaitFired)
 {
 	set_icon(idle);
+	::log("Idle timer:fire");
 }
 
 void start_idle_timer()
@@ -517,7 +519,8 @@ void start_idle_timer()
 	{
 		set_icon(none);
 		stop_idle_timer();
-		CreateTimerQueueTimer(&idle_timer, NULL, idle_handler, NULL, get_config(CIDLE_TIMER) * 1000, 1000, 0);
+		CreateTimerQueueTimer(&idle_timer, NULL, idle_handler, NULL, get_config(CIDLE_TIMER) * 1000, 0, 0);
+		::log("Idle timer:start %d", get_config(CIDLE_TIMER));
 	}
 }
 
