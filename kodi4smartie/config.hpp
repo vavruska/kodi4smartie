@@ -6,6 +6,7 @@ enum configs_e {
 	cPORT,
 	cLCD_WIDTH,
 	cUSE_BARS,
+	cBAR_MODE,
 	cRESET_DELAY,
 	cKODI_EXE,
 	cCONNECT_DELAY,

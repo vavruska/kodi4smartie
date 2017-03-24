@@ -45,6 +45,7 @@ config_t configs[] = {
 	{ "port",		MSTR, 0,	"9090" },
 	{ "lcd_width",	MINT, 20,	"" },
 	{ "use_bars",	MINT, 1,	"" },
+	{ "bar_mode", MINT, 0, 0 },
 	{ "reset_delay",MINT, 3,	"" },
 	{ "kodiexe",	MSTR, 0,	"Kodi.exe"},	
 	{ "connect_delay", MINT, 1, "" },
@@ -147,6 +148,7 @@ void init_config()
 	char line[128];
 	char *equal;
 	char *data;
+	char *pos;
 
 	if (fopen_s(&fd, "plugins\\kodi4smartie.cfg", "r") == 0)
 	{
@@ -166,9 +168,9 @@ void init_config()
 				OutputDebugStringA(data);
 
 				//remove the trailing newline
-				if (data[strlen(data)] == '\n')
+				if ((pos = strchr(data, '\n')) != NULL)
 				{
-					data[strlen(data)] = 0;
+					*pos = '\0';
 				}
 				if (_stricmp(line, "regex") == 0)
 				{

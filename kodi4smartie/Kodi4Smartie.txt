@@ -1,5 +1,5 @@
-Kodi4Smartie v2.0
-=================
+Kodi4Smartie v2.0.2
+===================
 
 Kodi4Smartie is a DLL plugin for LCD Smartie(http://lcdsmartie.sourceforge.net/) which listens for notification from Kodi and displays information on a 2 line LCD character display. While the default line width is 20 character there is no reason it can’t be configured for a short or longer width.
 
@@ -117,18 +117,17 @@ The source code is open source under the GPL license. We will gladly accept any 
 
 Change log
 ----------
-Here a list of things I remember fixing or changing since V1.0
+Changes from 2.0
 
-. Fix a use_bars to allow the bars to be disabled. This was functionaly broke in 1.x
-. Added functions 5-11
-. Fix problem with looking for config in the wrong location
-. Provide better error handling as well as fix a deadlock issue when kodi would exit mid request
-. Remove Host from the configuration. Kodi4Smartie must be running on the same machine as Kodi.
+Better connection mechanism when kodi is started after lcdSmartie
+bar_modes to show bars using different characters (see .cfg file for documentation)
+
  
 Bugs?
 -----
 
 If you find any bugs please let me know.
+
 
 New Features?
 -------------

@@ -46,7 +46,7 @@ extern bool connecting;
 HANDLE connect_timer;
 
 #define KODI_DLL_VERSION_MAJ "2"
-#define KODI_DLL_VERSION_MIN "0b1"
+#define KODI_DLL_VERSION_MIN "0.2a1"
 #define KODI_DLL_BUILD_DATE __DATE__
 
 //forward declaration
@@ -435,7 +435,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	return TRUE;
 }
 
-
 __declspec(dllexport) bool __stdcall is_kodi_running()
 {
 	WCHAR szProcessName[MAX_PATH] = { 0 };
@@ -469,11 +468,11 @@ __declspec(dllexport) bool __stdcall is_kodi_running()
 				}
 				else
 				{
-					string_t kodi = utility::conversions::to_string_t(get_config_str(cKODI_EXE));
-					string_t exe = string_t(path);
-					exe = exe.substr(exe.length() - kodi.length());
+					WCHAR kodi[100];
+					mbstowcs_s(NULL, kodi, get_config_str(cKODI_EXE), 100);
+					WCHAR *exe = path + wcslen(path)- wcslen(kodi);
 
-					if (exe.compare(kodi) == 0)
+					if (_wcsicmp(exe, kodi) == 0)
 					{
 						found = 1;
 					}

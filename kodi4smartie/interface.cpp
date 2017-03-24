@@ -102,10 +102,10 @@ __declspec(dllexport) void ws_connect()
 	}
 	catch (const websocket_exception &e) 
 	{
+		connecting = false;
 		::log("Error connecting. Error= %s", e.what());
 		//delete cbclient;
 		//cbclient = NULL;
-		connecting = false;
 	};
 
 }

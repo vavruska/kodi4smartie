@@ -245,10 +245,32 @@ void set_time(int percentage, string_t time, string_t totaltime)
 
 	if (get_config(cUSE_BARS))
 	{
-		string display;
-
-		time_str = string_t(U("$Bar(")) + std::to_wstring(percentage) + string_t(U(",100,")) +
-			std::to_wstring(get_config(cLCD_WIDTH)) + string_t(U(")"));
+		int mode = get_config(cBAR_MODE);
+		if (mode > 0)
+		{
+			int bars = (int) round((double)get_config(cLCD_WIDTH)*((double)percentage / 100));
+			time_str.clear();
+			for (int x = 0; x < (int) get_config(cLCD_WIDTH); x++)
+			{
+				switch (mode)
+				{
+				default: // mode 1
+					time_str.append((x < bars) ? string_t(U(">")) : string_t(U(" ")));
+					break;
+				case 2:
+					time_str.append((x < bars) ? string_t(U(">")) : string_t(U("-")));
+					break;
+				case 3:
+					time_str.append((x == bars) ? string_t(U(">")) : string_t(U("-")));
+					break;
+				}
+			}
+		}
+		else
+		{
+			time_str = string_t(U("$Bar(")) + std::to_wstring(percentage) + string_t(U(",100,")) +
+				std::to_wstring(get_config(cLCD_WIDTH)) + string_t(U(")"));
+		}
 	}
 	else
 	{
