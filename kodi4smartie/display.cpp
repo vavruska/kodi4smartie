@@ -88,7 +88,7 @@ void set_title(string_t newtitle)
 
 	title = string(newtitle.begin(), newtitle.end());
 
-	if (title.length > 0)
+	if (title.length() > 0)
 	{
 		sanitize(title);
 
