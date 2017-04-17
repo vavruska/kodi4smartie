@@ -85,15 +85,17 @@ void sanitize(string &incoming)
 void set_title(string_t newtitle)
 {
 	mtx.lock();
-	
+
 	title = string(newtitle.begin(), newtitle.end());
 
-	sanitize(title);
+	if (title.length > 0)
+	{
+		sanitize(title);
 
-	//remove leading whitespace/cr/lf
-	int pos = title.find_first_not_of("\n\r\t ");
-	title = title.substr(pos);
-
+		//remove leading whitespace/cr/lf
+		int pos = title.find_first_not_of("\n\r\t ");
+		title = title.substr(pos);
+	}
 	::log("title=%s", title.c_str());
 
 	mtx.unlock();
@@ -482,7 +484,12 @@ void show_stop()
 {
 	stop_time_timer();
 	set_icon(stop);
-	set_title(string_t(utility::conversions::to_string_t(get_config_str(sSTOP))));
+	try
+	{
+		set_title(string_t(utility::conversions::to_string_t(get_config_str(sSTOP))));
+	}
+	catch (...) {}
+
 	CreateTimerQueueTimer(&reset_timer, NULL, reset_fired, NULL, get_config(cRESET_DELAY)*1000, 0, 0);
 }
 

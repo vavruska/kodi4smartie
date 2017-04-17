@@ -62,6 +62,7 @@ config_t configs[] = {
 	{ "rewind_str",	MSTR, 0,	"Rewind" },
 	{ "volume_str", MSTR, 0,    "Volume"},	
 	{ "knf_str", MSTR, 0,       "Kodi not found"},	
+	{ "unknown_title", MSTR, 20, "Unknown Title"},
 };
 
 unsigned int get_config(configs_e index)

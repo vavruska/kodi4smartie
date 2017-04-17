@@ -30,6 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include "interface.hpp"
 #include "logging.hpp"
 #include "display.hpp"
+#include "config.hpp"
 
 using namespace std;
 using namespace web;
@@ -172,9 +173,18 @@ void handle_on_play(json::value in)
 							json::value ritem = result[U("item")];
 							json::value title = ritem[U("title")];
 							json::value type = ritem[U("type")];
+							title = json::value::string(U(""));
 							if (type.as_string().compare(U("movie")) == 0)
 							{
-								set_title(title.as_string());
+								if (title == json::value::string(U("")))
+								{
+									set_title(utility::conversions::to_string_t(get_config_str(sUNKNOWN)));
+								}
+								else
+								{
+									string_t title_str = title.as_string();
+									set_title(title_str);
+								}
 							}
 							else if (type.as_string().compare(U("episode")) == 0)
 							{
@@ -208,6 +218,7 @@ void handle_on_play(json::value in)
 					catch (...)
 					{
 						::log("Malformed get item response");
+						start_time_timer(1);
 					}
 				});
 			}
@@ -223,13 +234,22 @@ void handle_on_play(json::value in)
 				}
 				else
 				{
-					//handle title (dvd or unclassified video file
-					log("title %ls", title.as_string());
-					json::value player = data[U("player")];
-					json::value id = player[U("playerid")];
-					set_playerid(id.as_integer());
-					set_title(title.as_string());
-					start_time_timer(1);
+					try
+					{
+						//handle title (dvd or unclassified video file
+						log("title %ls", title.as_string());
+						json::value player = data[U("player")];
+						json::value id = player[U("playerid")];
+						set_playerid(id.as_integer());
+						set_title(title.as_string());
+						start_time_timer(1);
+					}
+					catch (...)
+					{
+						log("Malformed json message received for dvd/video title");
+						set_title(utility::conversions::to_string_t(get_config_str(sUNKNOWN)));
+						start_time_timer(1);
+					}
 				}
 			}
 		}
@@ -266,7 +286,7 @@ void handle_speed_change(json::value incoming)
 	catch (...)
 	{
 		cout << "error";
-		log("Malformed json message received: %d", incoming.serialize());
+		log("speed_change: Malformed json message received: %d", incoming.serialize());
 	}
 }
 

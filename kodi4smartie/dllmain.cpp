@@ -46,7 +46,7 @@ extern bool connecting;
 HANDLE connect_timer;
 
 #define KODI_DLL_VERSION_MAJ "2"
-#define KODI_DLL_VERSION_MIN "0.2a1"
+#define KODI_DLL_VERSION_MIN "0.2a2"
 #define KODI_DLL_BUILD_DATE __DATE__
 
 //forward declaration
@@ -259,7 +259,7 @@ __declspec(dllexport)  char * __stdcall  function4(char *param1, char *param2)
 __declspec(dllexport)  char * __stdcall  function5(char *param1, char *param2)
 { 
 
-	if (!connected && !connecting)// && is_kodi_running())
+	if (!connected && !connecting)
 	{
 		connecting = true;
 		CreateTimerQueueTimer(&connect_timer, NULL, try_connect, NULL, get_config(cCONNECT_DELAY) * 1000, 0, 0);
@@ -311,7 +311,7 @@ __declspec(dllexport)  char * __stdcall  function6(char *param1, char *param2)
 __declspec(dllexport)  char * __stdcall  function7(char *param1, char *param2)
 {
 
-	if (!connected && !connecting)// && is_kodi_running())
+	if (!connected && !connecting)
 	{
 		connecting = true;
 		CreateTimerQueueTimer(&connect_timer, NULL, try_connect, NULL, get_config(cCONNECT_DELAY) * 1000, 0, 0);
@@ -349,7 +349,7 @@ __declspec(dllexport)  char * __stdcall  function7(char *param1, char *param2)
 __declspec(dllexport)  char * __stdcall  function8(char *param1, char *param2)
 {
 
-	if (!connected && !connecting)// && is_kodi_running())
+	if (!connected && !connecting)
 	{
 		connecting = true;
 		CreateTimerQueueTimer(&connect_timer, NULL, try_connect, NULL, get_config(cCONNECT_DELAY) * 1000, 0, 0);

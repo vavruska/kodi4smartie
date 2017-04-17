@@ -23,6 +23,7 @@ enum configs_e {
 	sREWIND,
 	sVOLUME,
 	sKNF,
+	sUNKNOWN,
 	cMAX
 };
 
