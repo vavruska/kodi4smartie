@@ -1,0 +1,126 @@
+<div class="wikidoc">
+<h1>Kodi4Smartie</h1>
+<blockquote>
+<blockquote><img title="kodi4smartie1.png" src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=kodi4smartie&DownloadId=1443899" alt="kodi4smartie1.png"></blockquote>
+</blockquote>
+<p>Kodi4Smartie is a DLL plugin for LCD Smartie(http://lcdsmartie.sourceforge.net/) which listens for notification from Kodi and displays information on a 2 line LCD character display. While the default line width is 20 character there is no reason it can't
+ be configured for a short or longer width.</p>
+<h2>Installation</h2>
+<p>1) Download the zip file containing the Kodi4Smartie DLL and associated files.<br>
+2) Extract the files<br>
+</p>
+<blockquote>
+<blockquote><img title="kodi4smartie2.png" src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=kodi4smartie&DownloadId=1577735" alt="kodi4smartie2.png"></blockquote>
+</blockquote>
+<p>3) Copy the kodi4smartie.dll and the kodi4smartie.cfg to the LCD Smartie program plugins folder.<br>
+4) Copy the cpprest120_<em>2_</em>6.dll to the LCD Smartie program folder.<br>
+<br>
+The DLL provides the following LCD Smartie functions:<br>
+<br>
+<strong>Function 1:</strong> Is meant to be displayed on line 1 of an LCD display. It shows title information as well as other navigation information (FF, rew, Volume)<br>
+<br>
+<strong>Function 2: </strong>Is meant to be displayed on line 2 of an LCD display. Upon initial playing of a title Kodi4Smartie shows various lines of information about the title. It then shows current progress in a title.<br>
+<br>
+<strong>Function 3:</strong> Lets you know if Kodi is running. It can be used for custom actions inside LCD Smartie.<br>
+<br>
+<strong>Function 4:</strong> Displays the current version of the Kodi4Smartie DLL. Not really useful unless you are unsure which version of the DLL you are running.</p>
+<p><strong>Function 5</strong>: Displays custom information from kodi.</p>
+<p style="padding-left:30px">usage: $dll(Kodi4smartie,5,method,item#sub-item)</p>
+<p style="padding-left:30px"><br>
+Example 1:&nbsp;$dll(kodi4smartie,5,Player.GetPlayers,#type)<br>
+<br>
+In this example we are calling the Player.GetPlayers method. This method returns PlayerId and type. We want the value associated with type.</p>
+<p style="padding-left:30px"><br>
+Example 2:$dll(kodi4smartie,5,Player.GetProperties,totaltime#minutes)<br>
+<br>
+In this example we calling the Player.GetProperties method to get the totaltime item. The item returns hours,minutes,second and milisecond. We are looking for the the minutes.</p>
+<p><strong>Function 6</strong>: Display the current icon (from function 1). Can be useful for forming your own screens.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;usage : $dll(Kodi4smartie,6,,)</p>
+<p><br>
+<strong>Function 7</strong>: Display Label - If kodi is not running then it will display the &quot;knf_str&quot; string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;usage : $dll(Kodi4smartie,7,method,item)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Example &nbsp;1:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$dll(kodi4smartie,7,XBMC.GetInfoLabels,System.CurrentWindow)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This example will show the page or menu you are on (Home/Movies/Music/etc)&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Example 2:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$dll(kodi4smartie,7,XBMC.GetInfoLabels,System.CurrentControl)<br>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This example will show the current control/sub menu item.<br>
+<br>
+<strong>Function 8</strong>: Duplicate of function 7 except it displays nothing instead of the &quot;knf_str&quot; string.<br>
+<br>
+<strong>Function 9</strong>: Display kodi state<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Returns an integer of the current state: kodi_not_running(0),none(1), play(2), stop(3), pause(4), ff(5), rew(6), mute(7),idle(11 -- see idle_timer)<br>
+<br>
+<strong>Function 10</strong>: Reset idle timer<br>
+<br>
+<strong>Function 11</strong>: Get connected state&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;This function is better at detecting Kodi than function 3 since function 3 will return true before you can communicate with&nbsp;Kodi.</p>
+<h2>Configuring LCD Smartie</h2>
+<p>In the lcd Smartie setup window for line 1 &amp; 2 enter the following:<br>
+<br>
+$dll(Kodi4smartie,1,,)<br>
+$dll(Kodi4smartie,2,,)<br>
+<br>
+Configure the following for both lines:<br>
+<br>
+Enable &quot;Don't scroll this line&quot;<br>
+Disable &quot;Continue on next line&quot;<br>
+Disable &quot;Center Text&quot;<br>
+<br>
+<img title="kodi4smartie3.png" src="http://download-codeplex.sec.s-msft.com/Download?ProjectName=kodi4smartie&DownloadId=1443901" alt="kodi4smartie3.png"></p>
+<h2>&nbsp;</h2>
+<h2>Advanced Setup</h2>
+<p>If you want to switch between screens you can use the following lcd smartie configurations to get you started:<br>
+<br>
+Refresh interval 1000. screen 1-3:Enabled &amp; Sticky<br>
+<br>
+screen 1<br>
+line1: $dll(kodi4smartie,8,XBMC.GetInfoLabels,System.CurrentWindow)IDLE<br>
+line2: SCREEN<br>
+<br>
+screen 2<br>
+line 1:$dll(kodi4smartie,7,XBMC.GetInfoLabels,System.CurrentWindow)<br>
+line 2:$dll(kodi4smartie,7,XBMC.GetInfoLabels,System.CurrentControl)<br>
+<br>
+Screen 3<br>
+line 1:$dll(kodi4smartie,1,,)<br>
+line 2:$dll(kodi4smartie,2,,)$dll(kodi4smartie,10,,)<br>
+<br>
+Action 1: $dll(kodi4smartie,9,,) = 1 gotoscreen(2)<br>
+Action 1: $dll(kodi4smartie,9,,) = 2 gotoscreen(3)<br>
+Action 1: $dll(kodi4smartie,9,,) = 11 gotoscreen(1)</p>
+<p>Notifications</p>
+<p>Kodi4Smartie listens for the following notifications from Kodi<br>
+<br>
+<em>Player.OnPlay</em><br>
+<em>Player.OnPause</em><br>
+<em>Player.OnStop</em><br>
+<em>Player.OnSpeedChanged</em><br>
+<em>Application.OnVolumeChanged</em><br>
+<br>
+When the dll receives notifications it will display different information based on which notification is received and which player you are using (movie, song, picture, tv).</p>
+<h2>Configuration</h2>
+<p>While I have tried to make Kodi4Smartie somewhat configurable it is also based on what I wanted to see on each screen.<br>
+<br>
+See the Kodi4Smartie.cfg file for information about configuring kodi4smartie.</p>
+<p>&nbsp;</p>
+<h2>Change log</h2>
+<p>Here a list of things I remember fixing or changing since V1.0<br>
+<br>
+. Fix a use_bars to allow the bars to be disabled. This was functionally broke in 1.x<br>
+. Added functions 5-11<br>
+. Fix problem with looking for config in the wrong location<br>
+. Provide better error handling as well as fix a deadlock issue when kodi would exit mid request<br>
+. Remove Host from the configuration. Kodi4Smartie must be running on the same machine as Kodi. This may return in a 2.1 release as I think I have a need for it return.</p>
+<p>&nbsp;</p>
+<h2>Special Thanks</h2>
+<p>Special thanks go out to&nbsp;Johannes Tveden Nielsen for pushing me along to add the new functionality. Without his push and testing function 5-11 would not have been added.</p>
+<h2>Source Code</h2>
+<p>The source code is open source under GPLv3. We will gladly accept any modification as long as they fit into the project. Source code can be found at kodi4smartie.codeplex.com</p>
+<h2>Bugs?</h2>
+<p>I primarily use Kodi for viewing movies. While there is support for in the DLL for displaying information about TV, Music and Pictures I have done little testing in this area.<br>
+<br>
+If you find any bugs please let me know. Please include any steps needed to reproduce the issue.</p>
+</div><div class="ClearBoth"></div>
