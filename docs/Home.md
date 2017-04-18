@@ -1,14 +1,14 @@
 # KODI4SMARTIE
-::![](Home_kodi4smartie0.png)
+![](Home_kodi4smartie0.png)
 
 KODI4SMARTIE is a DLL for LCD Smartie ([http://lcdsmartie.sourceforge.net/](http://lcdsmartie.sourceforge.net/)) that allows information about what is playing in Kodi ([http://kodi.tv](http://kodi.tv)) to be displayed on an LCD Character display. See the LCD Smartie web site for supported devices.
 
-+My Setup+
-Windows 7 x64
-LCD Smartie 5.4
-Kodi v16.1 (Jarvis) 
-2x20 Blue back-lit character display using a SPLC780C (HD44780 compatible) controller.
-PIC LCD Backpack ([http://dangerousprototypes.com/docs/PIC_LCD_backpack](http://dangerousprototypes.com/docs/PIC_LCD_backpack))
+## My Setup
+Windows 7 x64<br>
+LCD Smartie 5.4<br>
+Kodi v17.0 (Krypton)<br>
+2x20 Blue back-lit character display using a SPLC780C (HD44780 compatible) controller<br>
+PIC LCD Backpack ([http://dangerousprototypes.com/docs/PIC_LCD_backpack](http://dangerousprototypes.com/docs/PIC_LCD_backpack))<br>
 
 I connect directly to one of the USB headers on my motherboard. 
 
