@@ -13,6 +13,7 @@ enum configs_e {
 	cTIME_FORMAT,
 	cDISABLE_ICON,
 	CIDLE_TIMER,
+	CTIMEOUT,
 
 	//strings. override these in the config file to localize
 	sWELCOME,

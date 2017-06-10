@@ -52,6 +52,7 @@ config_t configs[] = {
 	{ "time_format", MSTR, 0, "mm/dd/yy hh:nn" },
 	{ "disable_icon", MINT, 0, "" },
 	{ "idle_timer", MINT, 0, "" },
+	{ "timeout", MINT, 5, ""},
 
 	//strings. override these in the config file to localize
 	{ "welcome", MSTR, 0, "Kodi Media Center" },

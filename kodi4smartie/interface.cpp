@@ -213,7 +213,7 @@ __declspec(dllexport) json::value ws_send_wait(json::value input)
 	}).wait();
 
 	//wait upto 5 seconds for the response.
-	SleepConditionVariableCS(&message->cv, &message->lk, 5000);
+	SleepConditionVariableCS(&message->cv, &message->lk, get_config(CTIMEOUT)*1000);
 	LeaveCriticalSection(&message->lk);
 
 	map_mtx.lock();
