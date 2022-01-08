@@ -454,6 +454,10 @@ std::string get_custom_data(char *method, char *item)
 			{
 				item_str = to_wstring(item_val.as_number().to_double());
 			}
+			else if (item_val.is_boolean())
+			{
+				item_str = conversions::to_string_t(item_val.as_bool() ? "true" : "false");
+			}
 			string results = string(item_str.begin(), item_str.end());
 
 			sanitize(results);
